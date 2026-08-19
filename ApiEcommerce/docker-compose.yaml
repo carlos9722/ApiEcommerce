@@ -1,0 +1,190 @@
+services:
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "VaxiDrez2005$"
+      MSSQL_PID: "Developer"
+    volumes:
+      - sqlserverdata:/var/opt/mssql
+
+volumes:
+  sqlserverdata:
+
+# ============================================================
+# SQL SERVER - DOCKER
+# ============================================================
+#
+# Este proyecto utiliza SQL Server 2022 Developer mediante Docker.
+#
+# Credenciales:
+#   Usuario:      sa
+#   Contraseña:   VaxiDrez2005$
+#   Servidor:     localhost,1433
+#
+# Contenedor:
+#   sqlserver
+#
+# Imagen:
+#   mcr.microsoft.com/mssql/server:2022-latest
+#
+# ============================================================
+# PRIMERA VEZ / NUEVA INSTALACIÓN
+# ============================================================
+#
+# Si NO existe el contenedor "sqlserver":
+#
+#   docker compose up -d
+#
+# Docker utilizará la imagen existente si ya está descargada.
+# Si la imagen no existe, Docker la descargará automáticamente.
+#
+# ============================================================
+# SI YA EXISTE EL CONTENEDOR "sqlserver"
+# ============================================================
+#
+# IMPORTANTE:
+#
+# Si el contenedor "sqlserver" ya fue creado anteriormente
+# mediante "docker run", NO ejecutar directamente:
+#
+#   docker compose up -d
+#
+# porque Docker intentará crear otro contenedor con el mismo
+# nombre y aparecerá un conflicto.
+#
+# Para verificar si ya existe:
+#
+#   docker ps -a
+#
+# Si aparece:
+#
+#   sqlserver
+#
+# significa que el contenedor ya existe.
+#
+# Para levantar el contenedor existente:
+#
+#   docker start sqlserver
+#
+# Para detenerlo:
+#
+#   docker stop sqlserver
+#
+# ============================================================
+# COMANDOS ÚTILES
+# ============================================================
+#
+# Ver contenedores ejecutándose:
+#
+#   docker ps
+#
+# Ver todos los contenedores:
+#
+#   docker ps -a
+#
+# Ver imágenes disponibles:
+#
+#   docker images
+#
+# Ver logs de SQL Server:
+#
+#   docker logs sqlserver
+#
+# Seguir los logs en tiempo real:
+#
+#   docker logs -f sqlserver
+#
+# ============================================================
+# DOCKER COMPOSE
+# ============================================================
+#
+# Levantar el contenedor:
+#
+#   docker compose up -d
+#
+# Detener y eliminar el contenedor:
+#
+#   docker compose down
+#
+# IMPORTANTE:
+# "docker compose down" NO elimina el volumen.
+# Las bases de datos permanecen almacenadas en:
+#
+#   sqlserverdata
+#
+# Volver a levantar:
+#
+#   docker compose up -d
+#
+# ============================================================
+# ⚠️ ELIMINAR DATOS
+# ============================================================
+#
+# Para eliminar el contenedor Y el volumen:
+#
+#   docker compose down -v
+#
+# ⚠️ ADVERTENCIA:
+# Esto elimina el volumen "sqlserverdata" y las bases de datos
+# almacenadas en él.
+#
+# NO ejecutar este comando si quieres conservar los datos.
+#
+# ============================================================
+# CONEXIÓN DESDE LOS PROYECTOS
+# ============================================================
+#
+# Cada proyecto puede utilizar una base de datos diferente
+# dentro del mismo SQL Server.
+#
+# Ejemplo:
+#
+#   Server=localhost,1433;
+#   Database=MiProyecto;
+#   User Id=sa;
+#   Password=VaxiDrez2005$;
+#   TrustServerCertificate=True;
+#
+# ============================================================
+# ESTRUCTURA PARA VARIOS PROYECTOS
+# ============================================================
+#
+# Un solo SQL Server puede contener varias bases de datos:
+#
+#   sqlserver
+#   ├── BD_Proyecto1
+#   ├── BD_Proyecto2
+#   ├── BD_Proyecto3
+#   └── BD_Proyecto4
+#
+# Cada aplicación se conecta a su propia base de datos.
+#
+# ============================================================
+# USAR EN OTRO PC
+# ============================================================
+#
+# En otro PC:
+#
+# 1. Instalar Docker.
+#
+# 2. Clonar/copiar el proyecto.
+#
+# 3. Ejecutar:
+#
+#      docker compose up -d
+#
+# Docker descargará la imagen automáticamente si no existe.
+#
+# IMPORTANTE:
+# El volumen "sqlserverdata" es local a cada PC.
+# El docker-compose.yml NO comparte las bases de datos entre
+# diferentes computadores.
+#
+# Si se necesita compartir una BD existente, utilizar un
+# backup (.bak) o un script SQL para restaurarla en el otro PC.
+#
+# ============================================================

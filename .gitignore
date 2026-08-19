@@ -1,0 +1,103 @@
+# ============================================================
+# .NET / ASP.NET Core
+# ============================================================
+# Artefactos de compilación (nunca se versionan)
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+[Ll]og/
+[Ll]ogs/
+*.log
+
+# Salida de publish / empaquetado
+publish/
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ============================================================
+# Visual Studio / Rider / VS Code
+# ============================================================
+.vs/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.sln.docstates
+*.rsuser
+
+# Rider
+.idea/
+*.sln.iml
+
+# VS Code: se versionan ajustes de equipo, no estado local
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# ============================================================
+# NuGet
+# ============================================================
+*.nuget.props
+*.nuget.targets
+**/packages/*
+!**/packages/build/
+
+# ============================================================
+# Secretos y configuración local
+# ============================================================
+# User Secrets de ASP.NET (no van al repo)
+**/secrets.json
+
+# Variables de entorno locales (usar .env.example como plantilla)
+.env
+.env.*
+!.env.example
+
+# Overrides locales (no sustituye a appsettings.json ni Development)
+appsettings.*.local.json
+*.pfx
+*.key
+*.pem
+
+# ============================================================
+# Tests y cobertura
+# ============================================================
+TestResults/
+[Tt]est[Rr]esult*/
+coverage/
+coverage*.json
+coverage*.xml
+*.coverage
+*.coveragexml
+
+# ============================================================
+# Docker
+# ============================================================
+# Datos de contenedores / volúmenes locales
+docker-data/
+*.bak
+
+# ============================================================
+# Sistema operativo
+# ============================================================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+$RECYCLE.BIN/
+
+# ============================================================
+# Herramientas / misceláneo
+# ============================================================
+*.swp
+*~
+*.tmp
+*.temp
+*.cache
+node_modules/

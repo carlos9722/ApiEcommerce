@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <!-- Versión de .NET utilizada por el proyecto -->
+    <TargetFramework>net10.0</TargetFramework>
+
+    <!-- Activa las validaciones de referencias nulas -->
+    <Nullable>enable</Nullable>
+
+    <!-- Incluye automáticamente los namespaces comunes de .NET -->
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Soporte para documentación OpenAPI/Swagger -->
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+    <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
+  </ItemGroup>
+
+</Project>
