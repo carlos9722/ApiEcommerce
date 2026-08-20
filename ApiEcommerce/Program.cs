@@ -1,5 +1,15 @@
+using ApiEcommerce.Data;
+using Microsoft.EntityFrameworkCore;
+
+
 // Punto de entrada y configuración principal de la aplicación.
 var builder = WebApplication.CreateBuilder(args);
+
+// Obtiene la cadena de conexión configurada en appsettings.json.
+var dbConnectionString = builder.Configuration.GetConnectionString("ConexionSql");
+
+// Registra el DbContext y configura SQL Server como proveedor de base de datos.
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConnectionString));
 
 // Registra los Controllers para manejar las peticiones HTTP.
 builder.Services.AddControllers();
