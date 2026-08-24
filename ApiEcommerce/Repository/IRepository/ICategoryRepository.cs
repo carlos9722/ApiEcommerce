@@ -25,8 +25,11 @@ namespace ApiEcommerce.Repository.IRepository
         /// Obtiene una categoría específica mediante su identificador.
         /// </summary>
         /// <param name="id">Identificador de la categoría.</param>
-        /// <returns>La entidad Category encontrada.</returns>
-        Category GetCategory(int id);
+        /// <returns>
+        /// La entidad Category encontrada; si no existe una categoría con el identificador indicado,
+        /// devuelve null.
+        /// </returns>
+        Category? GetCategory(int id);
 
         /// <summary>
         /// Verifica si existe una categoría con el identificador indicado.

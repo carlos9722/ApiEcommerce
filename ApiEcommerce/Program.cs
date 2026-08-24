@@ -1,4 +1,6 @@
 using ApiEcommerce.Data;
+using ApiEcommerce.Repository;
+using ApiEcommerce.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -10,6 +12,14 @@ var dbConnectionString = builder.Configuration.GetConnectionString("ConexionSql"
 
 // Registra el DbContext y configura SQL Server como proveedor de base de datos.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConnectionString));
+
+// Registra el repositorio de categorías con ciclo de vida Scoped,
+// creando una instancia por cada solicitud HTTP.
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+// Registra AutoMapper y carga los perfiles de mapeo definidos
+// en el ensamblado donde se encuentra la clase Program.
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 // Registra los Controllers para manejar las peticiones HTTP.
 builder.Services.AddControllers();

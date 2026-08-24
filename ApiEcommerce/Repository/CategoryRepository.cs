@@ -92,16 +92,14 @@ public class CategoryRepository : ICategoryRepository
     /// Obtiene una categoría a partir de su identificador.
     /// </summary>
     /// <param name="id">Identificador único de la categoría.</param>
-    /// <returns>La categoría encontrada.</returns>
-    /// <exception cref="InvalidOperationException">
-    /// Se produce cuando no existe una categoría con el identificador especificado.
-    /// </exception>
-    public Category GetCategory(int id)
+    /// <returns>
+    /// La categoría encontrada; si no existe una categoría con el identificador especificado,
+    /// devuelve <c>null</c>.
+    /// </returns>
+    public Category? GetCategory(int id)
     {
         return _db.Categories
-            .FirstOrDefault(category => category.Id == id)
-            ?? throw new InvalidOperationException(
-                $"La categoría con el id {id} no existe.");
+            .FirstOrDefault(category => category.Id == id);
     }
 
     /// <summary>
