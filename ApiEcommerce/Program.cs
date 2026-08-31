@@ -17,6 +17,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 // creando una instancia por cada solicitud HTTP.
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
+// Registra el repositorio de productos con ciclo de vida Scoped,
+// creando una instancia por cada solicitud HTTP.
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
 // Registra AutoMapper y carga los perfiles de mapeo definidos
 // en el ensamblado donde se encuentra la clase Program.
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
