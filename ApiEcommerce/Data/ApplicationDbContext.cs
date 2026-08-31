@@ -86,5 +86,27 @@ namespace ApiEcommerce.Data
         /// </para>
         /// </summary>
         public DbSet<Product> Products { get; set; }
+
+        /// <summary>
+        /// Representa el conjunto de usuarios que Entity Framework Core
+        /// administra en la base de datos.
+        /// 
+        /// <para>
+        /// El nombre <c>Users</c> representa una colección de objetos
+        /// <see cref="User"/>. Entity Framework Core utiliza este
+        /// <see cref="DbSet{TEntity}"/> para realizar operaciones sobre
+        /// los registros correspondientes a la entidad <see cref="User"/>.
+        /// </para>
+        /// 
+        /// <para>
+        /// Por medio de <c>Users</c> podemos consultar, agregar, actualizar
+        /// y eliminar usuarios utilizando C# y Entity Framework Core,
+        /// sin tener que escribir directamente las consultas SQL para estas
+        /// operaciones.
+        /// </para>
+        /// </summary>
+        public DbSet<User> Users { get; set; }
+
+
     }
 }
