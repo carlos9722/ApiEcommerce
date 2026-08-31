@@ -21,6 +21,10 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 // creando una instancia por cada solicitud HTTP.
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
+// Registra el repositorio de usuarios con ciclo de vida Scoped,
+// creando una instancia por cada solicitud HTTP.
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 // Registra AutoMapper y carga los perfiles de mapeo definidos
 // en el ensamblado donde se encuentra la clase Program.
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
