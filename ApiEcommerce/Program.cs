@@ -1,3 +1,4 @@
+using ApiEcommerce.Constans;
 using ApiEcommerce.Data;
 using ApiEcommerce.Repository;
 using ApiEcommerce.Repository.IRepository;
@@ -35,6 +36,19 @@ builder.Services.AddControllers();
 // Habilita la generación de documentación OpenAPI.
 builder.Services.AddOpenApi();
 
+// Configura las políticas de CORS (Cross-Origin Resource Sharing),
+// permitiendo controlar qué aplicaciones externas pueden consumir la API.
+builder.Services.AddCors(options =>
+  {
+    options.AddPolicy(PolicyNames.AllowSpecificOrigin,
+    builder =>
+    {
+      builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+    }
+    );
+  }
+);
+
 // Construye la aplicación con los servicios configurados.
 var app = builder.Build();
 
@@ -53,6 +67,9 @@ if (app.Environment.IsDevelopment())
 
 // Redirige las peticiones HTTP hacia HTTPS.
 app.UseHttpsRedirection();
+
+// Aplica la política de CORS configurada anteriormente,
+app.UseCors(PolicyNames.AllowSpecificOrigin);
 
 // Habilita el middleware de autorización.
 app.UseAuthorization();
