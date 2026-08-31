@@ -21,7 +21,7 @@ namespace ApiEcommerce.Models
         /// <summary>
         /// Nombre de usuario utilizado para autenticarse.
         /// </summary>
-        public string? Username { get; set; }
+        public string Username { get; set; } = string.Empty;
 
         /// <summary>
         /// Contraseña del usuario.
