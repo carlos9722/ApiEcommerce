@@ -1,5 +1,6 @@
 using System.Text;
 using ApiEcommerce.Constans;
+using ApiEcommerce.Constants;
 using ApiEcommerce.Data;
 using ApiEcommerce.Repository;
 using ApiEcommerce.Repository.IRepository;
@@ -17,6 +18,13 @@ var dbConnectionString = builder.Configuration.GetConnectionString("ConexionSql"
 
 // Registra el DbContext y configura SQL Server como proveedor de base de datos.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConnectionString));
+
+// Configura el servicio de caché de respuestas HTTP.
+builder.Services.AddResponseCaching(options =>
+{
+  options.MaximumBodySize = 1024 * 1024;
+  options.UseCaseSensitivePaths = true;
+});
 
 // Registra el repositorio de categorías con ciclo de vida Scoped,
 // creando una instancia por cada solicitud HTTP.
@@ -78,8 +86,13 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Registra los Controllers para manejar las peticiones HTTP.
-builder.Services.AddControllers();
+// Registra los Controllers y configura los perfiles de caché disponibles.
+builder.Services.AddControllers(option =>
+{
+  option.CacheProfiles.Add(CacheProfiles.Default10, CacheProfiles.Profile10);
+  option.CacheProfiles.Add(CacheProfiles.Default20, CacheProfiles.Profile20);
+}
+);
 
 // Habilita la generación de documentación OpenAPI.
 builder.Services.AddOpenApi(options =>
@@ -194,6 +207,9 @@ app.UseHttpsRedirection();
 
 // Aplica la política de CORS configurada anteriormente,
 app.UseCors(PolicyNames.AllowSpecificOrigin);
+
+// Habilita el middleware de caché de respuestas HTTP.
+app.UseResponseCaching();
 
 // Habilita el middleware de autenticación,
 // encargado de validar las credenciales del usuario, incluyendo los tokens JWT.
