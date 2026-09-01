@@ -1,6 +1,7 @@
 using ApiEcommerce.Models;
 using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Repository.IRepository;
+using Asp.Versioning;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,8 +13,9 @@ namespace ApiEcommerce.Controllers
     /// Controlador encargado de gestionar las operaciones relacionadas con productos.
     /// </summary>
     [Authorize(Roles = "Admin")]
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [ApiVersionNeutral]
     public class ProductsController : ControllerBase
     {
         private readonly IProductRepository _productRepository;

@@ -4,6 +4,7 @@ using ApiEcommerce.Constants;
 using ApiEcommerce.Data;
 using ApiEcommerce.Repository;
 using ApiEcommerce.Repository.IRepository;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -171,6 +172,21 @@ builder.Services.AddOpenApi(options =>
             return Task.CompletedTask;
         }
     );
+});
+
+// Configura el versionado de la API y define la versión predeterminada.
+// Si el cliente no especifica una versión, se utilizará la versión 1.0.
+var apiVersioningBuilder = builder.Services.AddApiVersioning(option =>
+{
+  option.AssumeDefaultVersionWhenUnspecified = true;
+  option.DefaultApiVersion = new ApiVersion(1, 0);
+  option.ReportApiVersions = true;
+  // option.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader("api-version")); //?api-version
+});
+apiVersioningBuilder.AddApiExplorer(option =>
+{
+  option.GroupNameFormat = "'v'VVV"; // v1,v2,v3...
+  option.SubstituteApiVersionInUrl = true; // api/v{version}/products
 });
 
 // Configura las políticas de CORS (Cross-Origin Resource Sharing),

@@ -1,6 +1,7 @@
 using ApiEcommerce.Constants;
 using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Repository.IRepository;
+using Asp.Versioning;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,9 +13,10 @@ namespace ApiEcommerce.Controllers
     /// Controlador encargado de gestionar las operaciones HTTP relacionadas
     /// con las categorías.
     /// </summary>
-    [Route("api/[controller]")]
-    [ApiController]
     [Authorize(Roles = "Admin")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiController]
+    [ApiVersionNeutral]
     public class CategoriesController : ControllerBase
     {
         // Repositorio utilizado para consultar y modificar las categorías.
