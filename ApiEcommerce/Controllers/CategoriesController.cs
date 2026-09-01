@@ -1,6 +1,7 @@
 using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Repository.IRepository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +13,7 @@ namespace ApiEcommerce.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class CategoriesController : ControllerBase
     {
         // Repositorio utilizado para consultar y modificar las categorías.
@@ -43,6 +45,7 @@ namespace ApiEcommerce.Controllers
         /// <returns>
         /// Una respuesta HTTP 200 con la lista de categorías.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -67,6 +70,7 @@ namespace ApiEcommerce.Controllers
         /// Una respuesta HTTP 200 con la categoría encontrada,
         /// o HTTP 404 si la categoría no existe.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("{id:int}", Name = "GetCategory")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

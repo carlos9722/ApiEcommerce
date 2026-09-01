@@ -2,6 +2,7 @@ using ApiEcommerce.Models;
 using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Repository.IRepository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace ApiEcommerce.Controllers
     /// <summary>
     /// Controlador encargado de gestionar las operaciones relacionadas con productos.
     /// </summary>
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -31,6 +33,7 @@ namespace ApiEcommerce.Controllers
         /// <summary>
         /// Obtiene todos los productos registrados.
         /// </summary>
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -46,6 +49,7 @@ namespace ApiEcommerce.Controllers
         /// <summary>
         /// Obtiene un producto utilizando su identificador.
         /// </summary>
+        [AllowAnonymous]
         [HttpGet("{productId:int}", Name = "GetProduct")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
