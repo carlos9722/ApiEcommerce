@@ -8,7 +8,7 @@ namespace ApiEcommerce.Models.Dtos
         /// <summary>
         /// Información del usuario autenticado.
         /// </summary>
-        public UserRegisterDto? User { get; set; }
+        public UserDataDto? User { get; set; }
 
         /// <summary>
         /// Token generado para autenticar las siguientes solicitudes.

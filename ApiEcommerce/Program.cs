@@ -45,12 +45,12 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 // en el ensamblado donde se encuentra la clase Program.
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
-// Configura ASP.NET Core Identity utilizando IdentityUser e IdentityRole
+// Configura ASP.NET Core Identity utilizando ApplicationUser e IdentityRole
 // para gestionar usuarios, roles y autenticación de identidad.
 // Utiliza Entity Framework Core como mecanismo de almacenamiento de los datos
 // de Identity y agrega los proveedores de tokens predeterminados para operaciones
 // como recuperación de contraseña, confirmación de correo y tokens de seguridad
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 

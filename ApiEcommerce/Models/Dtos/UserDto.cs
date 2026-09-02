@@ -8,7 +8,7 @@ namespace ApiEcommerce.Models.Dtos
         /// <summary>
         /// Identificador único del usuario.
         /// </summary>
-        public int Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// Nombre del usuario.
@@ -19,15 +19,5 @@ namespace ApiEcommerce.Models.Dtos
         /// Nombre de usuario utilizado para iniciar sesión.
         /// </summary>
         public string? Username { get; set; }
-
-        /// <summary>
-        /// Contraseña asociada al usuario.
-        /// </summary>
-        public string? Password { get; set; }
-
-        /// <summary>
-        /// Rol asignado al usuario dentro de la aplicación.
-        /// </summary>
-        public string? Role { get; set; }
     }
 }

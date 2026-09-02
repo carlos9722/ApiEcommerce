@@ -22,6 +22,12 @@ namespace ApiEcommerce.Mapping
 
             // Permite convertir User ↔ UserLoginResponseDto en ambas direcciones.
             CreateMap<User, UserLoginResponseDto>().ReverseMap();
+
+            // Permite convertir ApplicationUser ↔ UserDataDto en ambas direcciones.
+            CreateMap<ApplicationUser, UserDataDto>().ReverseMap();
+
+            // Permite convertir ApplicationUser ↔ UserDto en ambas direcciones.
+            CreateMap<ApplicationUser, UserDto>().ReverseMap();
         }
     }
 }

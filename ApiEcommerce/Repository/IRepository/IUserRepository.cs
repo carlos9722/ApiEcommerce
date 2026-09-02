@@ -11,14 +11,14 @@ namespace ApiEcommerce.Repository.IRepository
         /// <summary>
         /// Obtiene todos los usuarios registrados.
         /// </summary>
-        ICollection<User> GetUsers();
+        ICollection<ApplicationUser> GetUsers();
 
         /// <summary>
         /// Obtiene un usuario por su identificador.
         /// </summary>
-        /// <param name="id">Identificador del usuario.</param>
+        /// <param name="string">Identificador del usuario.</param>
         /// <returns>El usuario encontrado o null si no existe.</returns>
-        User? GetUser(int id);
+        ApplicationUser? GetUser(string id);
 
         /// <summary>
         /// Verifica si un nombre de usuario está disponible.
@@ -39,6 +39,6 @@ namespace ApiEcommerce.Repository.IRepository
         /// </summary>
         /// <param name="createUserDto">Datos necesarios para crear el usuario.</param>
         /// <returns>Usuario creado.</returns>
-        Task<User> Register(CreateUserDto createUserDto);
+        Task<UserDataDto> Register(CreateUserDto createUserDto);
     }
 }

@@ -5,6 +5,8 @@ using ApiEcommerce.Data;
 using ApiEcommerce.Models;
 using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Repository.IRepository;
+using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -19,29 +21,38 @@ namespace ApiEcommerce.Repository
 
         private string? secretKey;
 
+
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IMapper _mapper;
+
         /// <summary>
         /// Inicializa el repositorio y obtiene la clave utilizada para generar JWT.
         /// </summary>
-        public UserRepository(ApplicationDbContext db, IConfiguration configuration)
+        public UserRepository(ApplicationDbContext db, IConfiguration configuration,
+                              UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper)
         {
             _db = db;
             secretKey = configuration.GetValue<string>("ApiSettings:SecretKey");
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _mapper = mapper;
         }
 
         /// <summary>
         /// Busca un usuario por su identificador.
         /// </summary>
-        public User? GetUser(int id)
+        public ApplicationUser? GetUser(string id)
         {
-            return _db.Users.FirstOrDefault(u => u.Id == id);
+            return _db.ApplicationUsers.FirstOrDefault(u => u.Id == id);
         }
 
         /// <summary>
         /// Obtiene todos los usuarios ordenados por username.
         /// </summary>
-        public ICollection<User> GetUsers()
+        public ICollection<ApplicationUser> GetUsers()
         {
-            return _db.Users.OrderBy(u => u.Username).ToList();
+            return _db.ApplicationUsers.OrderBy(u => u.UserName).ToList();
         }
 
         /// <summary>
@@ -71,9 +82,7 @@ namespace ApiEcommerce.Repository
             }
 
             // Busca el usuario utilizando el username recibido.
-            var user = await _db.Users.FirstOrDefaultAsync<User>(
-                u => u.Username.ToLower().Trim() ==
-                     userLoginDto.Username.ToLower().Trim());
+            var user = await _db.ApplicationUsers.FirstOrDefaultAsync<ApplicationUser>(u => u.UserName != null && u.UserName.ToLower().Trim() == userLoginDto.Username.ToLower().Trim());
 
             if (user == null)
             {
@@ -85,8 +94,29 @@ namespace ApiEcommerce.Repository
                 };
             }
 
+            if (userLoginDto.Password == null)
+            {
+                return new UserLoginResponseDto()
+                {
+                    Token = "",
+                    User = null,
+                    Message = "Password requerido"
+                };
+            }
+
             // BCrypt compara el password ingresado contra el hash almacenado.
-            if (!BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.Password))
+            /*if (!BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.Password))
+            {
+                return new UserLoginResponseDto()
+                {
+                    Token = "",
+                    User = null,
+                    Message = "Credenciales son incorrectas"
+                };
+            }*/
+
+            bool isValid = await _userManager.CheckPasswordAsync(user, userLoginDto.Password);
+            if (!isValid)
             {
                 return new UserLoginResponseDto()
                 {
@@ -104,6 +134,7 @@ namespace ApiEcommerce.Repository
                 throw new InvalidOperationException("SecretKey no esta configurada");
             }
 
+            var roles = await _userManager.GetRolesAsync(user);
             var key = Encoding.UTF8.GetBytes(secretKey);
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -112,8 +143,8 @@ namespace ApiEcommerce.Repository
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim("id", user.Id.ToString()),
-                    new Claim("username", user.Username),
-                    new Claim(ClaimTypes.Role, user.Role ?? string.Empty),
+                    new Claim("username",user.UserName ?? string.Empty),
+                    new Claim(ClaimTypes.Role, roles.FirstOrDefault() ?? string.Empty),
                 }),
                 Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(
@@ -126,13 +157,7 @@ namespace ApiEcommerce.Repository
             return new UserLoginResponseDto()
             {
                 Token = handlerToken.WriteToken(token),
-                User = new UserRegisterDto()
-                {
-                    Username = user.Username,
-                    Name = user.Name,
-                    Role = user.Role,
-                    Password = user.Password ?? ""
-                },
+                User = _mapper.Map<UserDataDto>(user),
                 Message = "Usuario logueado correctamente"
             };
         }
@@ -142,23 +167,46 @@ namespace ApiEcommerce.Repository
         /// </summary>
         /// <param name="createUserDto">Datos necesarios para registrar el usuario.</param>
         /// <returns>Usuario registrado.</returns>
-        public async Task<User> Register(CreateUserDto createUserDto)
+        public async Task<UserDataDto> Register(CreateUserDto createUserDto)
         {
-            // Nunca debemos guardar el password original directamente en la BD.
-            var encriptedPassword = BCrypt.Net.BCrypt.HashPassword(createUserDto.Password);
-
-            var user = new User()
+           if (string.IsNullOrEmpty(createUserDto.Username))
             {
-                Username = createUserDto.Username ?? "No Username",
-                Name = createUserDto.Name,
-                Role = createUserDto.Role,
-                Password = encriptedPassword
+                throw new ArgumentNullException("El Username es requerido");
+            }
+
+            if (createUserDto.Password == null)
+            {
+                throw new ArgumentNullException("El Password es requerido");
+            }
+
+            var user = new ApplicationUser()
+            {
+                UserName = createUserDto.Username,
+                Email = createUserDto.Username,
+                NormalizedEmail = createUserDto.Username.ToUpper(),
+                Name = createUserDto.Name
             };
 
-            _db.Users.Add(user);
-            await _db.SaveChangesAsync();
+            // Aquí ASP.NET Core Identity hashea la contraseña y guarda el resultado en PasswordHash
+            var result = await _userManager.CreateAsync(user, createUserDto.Password);
 
-            return user;
+            if (result.Succeeded)
+            {
+                var userRole = createUserDto.Role ?? "User";
+                var roleExists = await _roleManager.RoleExistsAsync(userRole);
+                if (!roleExists)
+                {
+                    var identityRole = new IdentityRole(userRole);
+                    await _roleManager.CreateAsync(identityRole);
+                }
+
+                await _userManager.AddToRoleAsync(user, userRole);
+                var createdUser = _db.ApplicationUsers.FirstOrDefault(u => u.UserName == createUserDto.Username);
+                return _mapper.Map<UserDataDto>(createdUser);
+            }
+
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new ApplicationException($"No se pudo realizar el registro: {errors}");
         }
     }
 }
