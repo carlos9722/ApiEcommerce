@@ -1,4 +1,5 @@
 using ApiEcommerce.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiEcommerce.Data
@@ -7,16 +8,23 @@ namespace ApiEcommerce.Data
     /// Contexto principal de acceso a datos de la aplicación.
     /// 
     /// <para>
-    /// Hereda de <see cref="DbContext"/>, que es la clase de Entity Framework Core
-    /// encargada de administrar la comunicación entre la aplicación y la base de datos.
+    /// Hereda de <see cref="IdentityDbContext{TUser}"/>, que extiende
+    /// <see cref="DbContext"/> y proporciona la infraestructura necesaria
+    /// para trabajar con Entity Framework Core y ASP.NET Core Identity.
+    /// </para>
+    /// 
+    /// <para>
+    /// Utiliza <see cref="ApplicationUser"/> como entidad de usuario personalizada,
+    /// permitiendo administrar usuarios, roles y demás información relacionada
+    /// con el sistema de identidad de la aplicación.
     /// </para>
     /// 
     /// <para>
     /// A través de este contexto podemos consultar, agregar, modificar y eliminar
-    /// información de las entidades que forman parte de nuestra aplicación.
+    /// información de las entidades que forman parte de la aplicación.
     /// </para>
     /// </summary>
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         /// <summary>
         /// Inicializa el contexto de base de datos utilizando la configuración
@@ -35,8 +43,9 @@ namespace ApiEcommerce.Data
         /// 
         /// <para>
         /// <c>base(options)</c> envía estas opciones al constructor de la clase
-        /// base <see cref="DbContext"/>. De esta forma, Entity Framework Core
-        /// recibe la configuración necesaria para trabajar con la base de datos.
+        /// base <see cref="IdentityDbContext{TUser}"/>. De esta forma, Entity Framework Core
+        /// recibe la configuración necesaria para trabajar con la base de datos
+        /// y ASP.NET Core Identity.
         /// </para>
         /// </summary>
         /// <param name="options">
@@ -45,6 +54,31 @@ namespace ApiEcommerce.Data
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options) : base(options)
         {
+        }
+
+        /// <summary>
+        /// Configura el modelo de datos que utilizará Entity Framework Core.
+        /// 
+        /// <para>
+        /// Este método permite establecer configuraciones adicionales sobre
+        /// las entidades, propiedades, relaciones y restricciones del modelo
+        /// antes de que Entity Framework Core genere o utilice la estructura
+        /// correspondiente en la base de datos.
+        /// </para>
+        /// 
+        /// <para>
+        /// <c>base.OnModelCreating(modelBuilder)</c> mantiene las configuraciones
+        /// predeterminadas proporcionadas por ASP.NET Core Identity, incluyendo
+        /// las entidades relacionadas con usuarios, roles y autenticación.
+        /// </para>
+        /// </summary>
+        /// <param name="modelBuilder">
+        /// Constructor utilizado para configurar el modelo de datos
+        /// de Entity Framework Core.
+        /// </param>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
         }
 
         /// <summary>
@@ -107,6 +141,23 @@ namespace ApiEcommerce.Data
         /// </summary>
         public DbSet<User> Users { get; set; }
 
-
+        /// <summary>
+        /// Representa el conjunto de usuarios personalizados que Entity Framework Core
+        /// administra en la base de datos mediante ASP.NET Core Identity.
+        /// 
+        /// <para>
+        /// El nombre <c>ApplicationUsers</c> representa una colección de objetos
+        /// <see cref="ApplicationUser"/>. Esta entidad hereda de
+        /// <see cref="Microsoft.AspNetCore.Identity.IdentityUser"/> y permite
+        /// agregar información personalizada a los usuarios administrados por
+        /// ASP.NET Core Identity.
+        /// </para>
+        /// 
+        /// <para>
+        /// Por medio de <c>ApplicationUsers</c> podemos consultar, agregar, actualizar
+        /// y eliminar usuarios personalizados utilizando C# y Entity Framework Core.
+        /// </para>
+        /// </summary>
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     }
 }

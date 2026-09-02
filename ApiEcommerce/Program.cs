@@ -1,11 +1,13 @@
 using System.Text;
 using ApiEcommerce.Constans;
 using ApiEcommerce.Constants;
+using ApiEcommerce.Models;
 using ApiEcommerce.Data;
 using ApiEcommerce.Repository;
 using ApiEcommerce.Repository.IRepository;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -42,6 +44,15 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 // Registra AutoMapper y carga los perfiles de mapeo definidos
 // en el ensamblado donde se encuentra la clase Program.
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
+// Configura ASP.NET Core Identity utilizando IdentityUser e IdentityRole
+// para gestionar usuarios, roles y autenticación de identidad.
+// Utiliza Entity Framework Core como mecanismo de almacenamiento de los datos
+// de Identity y agrega los proveedores de tokens predeterminados para operaciones
+// como recuperación de contraseña, confirmación de correo y tokens de seguridad
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
 // Obtiene la clave secreta utilizada para firmar y validar los tokens JWT
 // desde la configuración de la aplicación.
