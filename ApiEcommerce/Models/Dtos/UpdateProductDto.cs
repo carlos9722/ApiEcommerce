@@ -24,15 +24,25 @@ namespace ApiEcommerce.Models.Dtos
         /// <summary>
         /// URL de la imagen del producto.
         /// </summary>
-        public string ImgUrl { get; set; } = string.Empty;
+        public string? ImgUrl { get; set; }
 
         /// <summary>
-        /// Código SKU del producto.
+        /// Ruta local de la imagen del producto.
+        /// </summary>
+        public string? ImgUrlLocal { get; set; }
+
+        /// <summary>
+        /// Archivo de imagen que se utilizará para actualizar la imagen del producto.
+        /// </summary>
+        public IFormFile? Image { get; set; }
+
+        /// <summary>
+        /// Código SKU utilizado para identificar el producto.
         /// </summary>
         public string SKU { get; set; } = string.Empty;
 
         /// <summary>
-        /// Cantidad actual disponible en inventario.
+        /// Cantidad actual disponible del producto en inventario.
         /// </summary>
         public int Stock { get; set; }
 

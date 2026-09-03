@@ -229,6 +229,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+// Habilita el middleware para servir archivos estáticos,
+// como imágenes, hojas de estilo, archivos JavaScript, etc.
+app.UseStaticFiles();
+
 // Redirige las peticiones HTTP hacia HTTPS.
 app.UseHttpsRedirection();
 

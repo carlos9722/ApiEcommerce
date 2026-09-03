@@ -26,9 +26,14 @@ namespace ApiEcommerce.Models.Dtos
         public decimal Price { get; set; }
 
         /// <summary>
-        /// URL de la imagen del producto.
+        /// URL de la imagen asociada al producto.
         /// </summary>
-        public string ImgUrl { get; set; } = string.Empty;
+        public string? ImgUrl { get; set; }
+
+        /// <summary>
+        /// Archivo de imagen asociado al producto.
+        /// </summary>
+        public IFormFile? Image { get; set; }
 
         /// <summary>
         /// Código SKU utilizado para identificar el producto.
@@ -47,7 +52,7 @@ namespace ApiEcommerce.Models.Dtos
 
         /// <summary>
         /// Fecha y hora de la última actualización del producto.
-        /// Puede ser null si el producto aún no ha sido actualizado.
+        /// Puede ser <c>null</c> si el producto aún no ha sido actualizado.
         /// </summary>
         public DateTime? UpdateDate { get; set; }
 

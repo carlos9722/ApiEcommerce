@@ -42,7 +42,13 @@ namespace ApiEcommerce.Models
         /// Dirección URL de la imagen utilizada para representar
         /// visualmente el producto.
         /// </summary>
-        public string ImgUrl { get; set; } = string.Empty;
+        public string? ImgUrl { get; set; }
+
+
+        /// <summary>
+        /// Ruta local donde se encuentra almacenada la imagen del producto.
+        /// </summary>
+        public string? ImgUrlLocal { get; set; }
 
         /// <summary>
         /// Stock Keeping Unit (SKU).
