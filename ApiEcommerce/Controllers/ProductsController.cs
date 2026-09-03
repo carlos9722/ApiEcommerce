@@ -73,7 +73,9 @@ namespace ApiEcommerce.Controllers
         }
 
         /// <summary>
-        /// Crea un nuevo producto.
+        /// Crea un nuevo producto en el catálogo.
+        /// Valida que el producto y la categoría no existan previamente
+        /// y procesa la imagen asociada, si se proporciona.
         /// </summary>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -81,7 +83,7 @@ namespace ApiEcommerce.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult CreateProduct([FromBody] CreateProductDto createProductDto)
+        public IActionResult CreateProduct([FromForm] CreateProductDto createProductDto)
         {
             if (createProductDto == null)
             {
@@ -108,6 +110,18 @@ namespace ApiEcommerce.Controllers
             // Convertimos el DTO recibido desde la API en una entidad Product.
             var product = _mapper.Map<Product>(createProductDto);
 
+            // Procesamos la imagen del producto cuando se proporciona.
+            if (createProductDto.Image != null)
+            {
+                UploadProductImage(createProductDto, product);
+            }
+            else
+            {
+                // Asignamos una imagen predeterminada cuando no se proporciona una imagen.
+                product.ImgUrl = "https://placehold.co/300x300";
+            }
+
+            // Guardamos el producto en la base de datos.
             if (!_productRepository.CreateProduct(product))
             {
                 ModelState.AddModelError(
@@ -119,8 +133,11 @@ namespace ApiEcommerce.Controllers
 
             // Recuperamos el producto creado para devolver la información completa.
             var createdProduct = _productRepository.GetProduct(product.ProductId);
+
+            // Convertimos la entidad creada al DTO que será enviado al cliente.
             var productoDto = _mapper.Map<ProductDto>(createdProduct);
 
+            // Retornamos el producto creado y la ruta para consultarlo.
             return CreatedAtRoute(
                 "GetProduct",
                 new { productId = product.ProductId },
@@ -223,7 +240,7 @@ namespace ApiEcommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateProduct(
             int productId,
-            [FromBody] UpdateProductDto updateProductDto)
+            [FromForm] UpdateProductDto updateProductDto)
         {
             if (updateProductDto == null)
             {
@@ -251,6 +268,16 @@ namespace ApiEcommerce.Controllers
             // El ID utilizado para actualizar corresponde al recibido en la URL.
             product.ProductId = productId;
 
+            // Agregando imagen
+            if (updateProductDto.Image != null)
+            {
+                UploadProductImage(updateProductDto, product);
+            }
+            else
+            {
+                product.ImgUrl = "https://placehold.co/300x300";
+            }
+
             if (!_productRepository.UpdateProduct(product))
             {
                 ModelState.AddModelError(
@@ -262,6 +289,63 @@ namespace ApiEcommerce.Controllers
 
             return NoContent();
         }
+
+
+        /// <summary>
+        /// Carga la imagen del producto en el directorio de almacenamiento
+        /// y actualiza las rutas de acceso a la imagen en la entidad Product.
+        /// </summary>
+        /// <param name="productDto">
+        /// DTO que contiene el archivo de imagen que será almacenado.
+        /// </param>
+        /// <param name="product">
+        /// Entidad Product a la que se asociará la imagen almacenada.
+        /// </param>
+        private void UploadProductImage(dynamic productDto, Product product)
+        {
+            // Generamos un nombre único para evitar conflictos entre archivos.
+            string fileName =
+                product.ProductId +
+                Guid.NewGuid().ToString() +
+                Path.GetExtension(productDto.Image.FileName);
+
+            // Definimos el directorio donde se almacenarán las imágenes.
+            var imagesFolder = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "ProductsImages");
+
+            // Creamos el directorio si todavía no existe.
+            if (!Directory.Exists(imagesFolder))
+            {
+                Directory.CreateDirectory(imagesFolder);
+            }
+
+            // Construimos la ruta completa donde se almacenará la imagen.
+            var filePath = Path.Combine(imagesFolder, fileName);
+
+            FileInfo file = new FileInfo(filePath);
+
+            // Eliminamos el archivo si ya existe.
+            if (file.Exists)
+            {
+                file.Delete();
+            }
+
+            // Creamos el archivo y copiamos la imagen recibida al sistema de archivos.
+            using var fileStream = new FileStream(filePath, FileMode.Create);
+            productDto.Image.CopyTo(fileStream);
+
+            // Construimos la URL pública utilizada para acceder a la imagen.
+            var baseUrl =
+                $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+
+            product.ImgUrl = $"{baseUrl}/ProductsImages/{fileName}";
+
+            // Guardamos la ruta física del archivo en el servidor.
+            product.ImgUrlLocal = filePath;
+        }
+
 
         /// <summary>
         /// Elimina un producto utilizando su identificador.
