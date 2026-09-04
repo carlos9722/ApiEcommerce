@@ -161,6 +161,37 @@ namespace ApiEcommerce.Repository
         }
 
         /// <summary>
+        /// Obtiene los productos registrados de forma paginada.
+        /// </summary>
+        /// <param name="pageNumber">Número de página que se desea obtener.</param>
+        /// <param name="pageSize">Cantidad de productos que se incluirán en cada página.</param>
+        /// <returns>
+        /// Una colección de productos correspondiente a la página solicitada.
+        /// </returns>
+        public ICollection<Product> GetProductsInPages(int pageNumber, int pageSize)
+        {
+            return _db.Products.OrderBy(p => p.ProductId)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        }
+
+
+        /// <summary>
+        /// Obtiene los productos registrados de forma paginada.
+        /// </summary>
+        /// <param name="pageNumber">Número de página que se desea obtener.</param>
+        /// <param name="pageSize">Cantidad de productos que se incluirán en cada página.</param>
+        /// <returns>
+        /// Una colección de productos correspondiente a la página solicitada.
+        /// </returns>
+        public int GetTotalProducts()
+        {
+            return _db.Products.Count();
+        }
+
+
+        /// <summary>
         /// Comprueba si existe un producto con el identificador indicado.
         /// </summary>
         /// <param name="id">Identificador del producto.</param>

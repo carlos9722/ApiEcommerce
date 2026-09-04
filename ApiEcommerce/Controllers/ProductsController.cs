@@ -1,5 +1,6 @@
 using ApiEcommerce.Models;
 using ApiEcommerce.Models.Dtos;
+using ApiEcommerce.Models.Dtos.Responses;
 using ApiEcommerce.Repository.IRepository;
 using Asp.Versioning;
 using AutoMapper;
@@ -71,6 +72,49 @@ namespace ApiEcommerce.Controllers
 
             return Ok(productDto);
         }
+
+        /// <summary>
+        /// Obtiene una lista paginada de productos.
+        /// </summary>
+        /// <param name="pageNumber">
+        /// Número de la página que se desea obtener. El valor predeterminado es 1.
+        /// </param>
+        /// <param name="pageSize">
+        /// Cantidad de productos que se mostrarán por página. El valor predeterminado es 5.
+        /// </param>
+        /// <returns>
+        /// Retorna una respuesta paginada que contiene los productos solicitados.
+        /// </returns>
+        [AllowAnonymous]
+        [HttpGet("Paged", Name = "GetProductsInPage")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult GetProductsInPage([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 5)
+        {
+            if (pageNumber < 1 || pageSize < 1)
+            {
+                return BadRequest("Los paramétros de paginación no son válidos.");
+            }
+            var totalProducts = _productRepository.GetTotalProducts();
+            var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
+            if (pageNumber > totalPages)
+            {
+                return NotFound("No hay más páginas disponibles");
+            }
+            var products = _productRepository.GetProductsInPages(pageNumber, pageSize);
+            var productDto = _mapper.Map<List<ProductDto>>(products);
+            var paginationResponse = new PaginationResponse<ProductDto>
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = totalPages,
+                Items = productDto
+            };
+            return Ok(paginationResponse);
+        }
+
 
         /// <summary>
         /// Crea un nuevo producto en el catálogo.
