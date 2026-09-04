@@ -19,6 +19,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Obtiene la cadena de conexión configurada en appsettings.json.
 var dbConnectionString = builder.Configuration.GetConnectionString("ConexionSql");
 
+// Configura el contexto de Entity Framework Core utilizando SQL Server
+// y registra el proceso de inicialización de datos.
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+  options.UseSqlServer(dbConnectionString)
+  .UseSeeding((context, _) =>
+  {
+    var appContext = (ApplicationDbContext)context;
+    DataSeeder.SeedData(appContext);
+  })
+);
+
 // Registra el DbContext y configura SQL Server como proveedor de base de datos.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConnectionString));
 
